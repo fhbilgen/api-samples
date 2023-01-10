@@ -65,7 +65,7 @@ namespace Google.Apis.YouTube.Samples
       using (var stream = new FileStream("client_secrets.json", FileMode.Open, FileAccess.Read))
       {
         credential = await GoogleWebAuthorizationBroker.AuthorizeAsync(
-            GoogleClientSecrets.Load(stream).Secrets,
+            GoogleClientSecrets.FromStream(stream).Secrets,
             // This OAuth 2.0 access scope allows for full read/write access to the
             // authenticated user's account.
             new[] { YouTubeService.Scope.Youtube },
@@ -78,7 +78,7 @@ namespace Google.Apis.YouTube.Samples
       var youtubeService = new YouTubeService(new BaseClientService.Initializer()
       {
         HttpClientInitializer = credential,
-        ApplicationName = this.GetType().ToString()
+        ApplicationName = "AccountManagement"
       });
 
       // Create a new, private playlist in the authorized user's channel.
@@ -88,6 +88,11 @@ namespace Google.Apis.YouTube.Samples
       newPlaylist.Snippet.Description = "A playlist created with the YouTube API v3";
       newPlaylist.Status = new PlaylistStatus();
       newPlaylist.Status.PrivacyStatus = "public";
+
+
+            var playLists = youtubeService.Playlists.List("");
+            playLists.ExecuteAsync();
+
       newPlaylist = await youtubeService.Playlists.Insert(newPlaylist, "snippet,status").ExecuteAsync();
 
       // Add a video to the newly created playlist.
